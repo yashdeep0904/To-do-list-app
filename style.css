@@ -1,160 +1,260 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+/* --- Straight 3D & Glossy Variables --- */
+:root {
+    --bg-color: #e6ebfd;
+    --board-bg: linear-gradient(135deg, #ffffff 0%, #e2e8f9 100%);
+    
+    --color-pink: #ff8fa3;
+    --color-pink-shadow: #d16b7e;
+    
+    --color-blue: #8fd3f4;
+    --color-blue-shadow: #6ba7c7;
+    
+    --color-orange: #ffb88c;
+    --color-orange-shadow: #cc8e66;
+
+    --text-main: #3d3b5c;
+    --text-muted: #7b7899;
+    
+    --transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
 }
 
 body {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
     display: flex;
     justify-content: center;
-    padding-top: 50px;
+    align-items: center;
     min-height: 100vh;
+    overflow: hidden;
+    position: relative;
 }
 
-.container {
-    background-color: #242424;
+/* Background Floating Shapes */
+.floating-shape {
+    position: absolute;
+    border-radius: 50px;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1), 0 10px 20px rgba(0,0,0,0.15);
+    z-index: -1;
+}
+.shape-1 {
+    width: 120px; height: 120px;
+    background: var(--color-blue);
+    top: 15%; left: 15%;
+    animation: float-up 6s ease-in-out infinite;
+}
+.shape-2 {
+    width: 80px; height: 160px;
+    background: var(--color-pink);
+    bottom: 10%; right: 20%;
+    animation: float-up 8s ease-in-out infinite reverse;
+}
+.shape-3 {
+    width: 50px; height: 50px;
+    background: var(--color-orange);
+    top: 25%; right: 15%;
+    animation: float-up 5s ease-in-out infinite 1s;
+}
+
+@keyframes float-up {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-25px); }
+}
+
+/* --- Straight 3D Board --- */
+.board {
+    background: var(--board-bg);
     width: 100%;
-    max-width: 600px;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 30px;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    z-index: 1;
+    /* Straight 3D thickness pulling downwards */
+    box-shadow: 
+        0px 8px 0px #cbd4e6,
+        0px 15px 30px rgba(0,0,0,0.15),
+        inset 0px 5px 15px rgba(255,255,255,1);
 }
 
-header {
+/* Header */
+.app-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 2rem;
 }
 
-h1 {
-    font-size: 1.5rem;
-    color: #ffffff;
+.app-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #2b2940;
+    letter-spacing: -1px;
 }
 
 .badge {
-    background-color: #1e3a29;
-    color: #4ade80;
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    background: var(--color-blue);
+    padding: 6px 14px;
+    border-radius: 12px;
     font-weight: bold;
-    border: 1px solid #2f5d41;
-}
-
-.input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-}
-
-input[type="text"] {
-    flex: 1;
-    padding: 12px;
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 6px;
+    font-size: 0.8rem;
     color: #fff;
-    font-size: 1rem;
+    box-shadow: 0px 4px 0px var(--color-blue-shadow);
+}
+
+/* Input Section */
+.task-input-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 2.5rem;
+}
+
+.input-field {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #fff;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-main);
+    box-shadow: 0px 6px 0px #cbd4e6;
     outline: none;
+    transition: var(--transition);
 }
 
-input[type="text"]:focus {
-    border-color: #4ade80;
+.input-field:focus {
+    transform: translateY(4px);
+    box-shadow: 0px 2px 0px #cbd4e6;
 }
 
-button {
-    cursor: pointer;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    transition: all 0.2s ease;
-}
-
-#addTaskBtn {
-    background-color: #4ade80;
-    color: #1a1a1a;
-    padding: 0 20px;
+.btn {
+    border: 2px solid rgba(255,255,255,0.4);
+    padding: 0 24px;
+    border-radius: 16px;
     font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition);
 }
 
-#addTaskBtn:hover {
-    background-color: #22c55e;
+.btn--primary {
+    background: linear-gradient(135deg, #ff9eb0, var(--color-pink));
+    color: white;
+    /* Thick 3D button edge */
+    box-shadow: 0px 6px 0px var(--color-pink-shadow);
 }
 
-ul {
+/* Pressing down on the 3D button */
+.btn--primary:active {
+    transform: translateY(6px);
+    box-shadow: 0px 0px 0px var(--color-pink-shadow);
+}
+
+/* Task List */
+.task-list {
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-li {
-    background-color: #1a1a1a;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+.task-item {
     display: flex;
     align-items: center;
     gap: 15px;
-    border: 1px solid #333;
+    padding: 16px 20px;
+    border-radius: 18px;
+    border: 2px solid rgba(255,255,255,0.6);
+    transition: var(--transition);
+    /* Colors and shadows injected dynamically by JS */
+    background: var(--item-bg, linear-gradient(135deg, #fff, #f0f3fa));
+    box-shadow: 0px 6px 0px var(--item-shadow, #cbd4e6);
 }
 
-li.completed .task-text {
-    text-decoration: line-through;
-    color: #777;
+.task-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0px 10px 0px var(--item-shadow, #cbd4e6), 0px 15px 20px rgba(0,0,0,0.1);
 }
 
-input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+.task-item__checkbox {
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    accent-color: #4ade80;
+    accent-color: #2b2940;
 }
 
-.task-text {
+.task-item__content {
     flex: 1;
-    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.edit-input {
-    flex: 1;
-    padding: 6px;
-    background-color: #242424;
-    border: 1px solid #4ade80;
-    color: #fff;
-    border-radius: 4px;
-    outline: none;
+.task-item__text {
+    font-size: 1.1rem;
+    font-weight: 700;
 }
 
-.action-btn {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    background-color: transparent;
+.task-item__time {
+    font-size: 0.8rem;
+    color: rgba(0,0,0,0.5);
+    font-weight: bold;
 }
 
-.edit-btn {
-    color: #60a5fa;
-    border: 1px solid #60a5fa;
+.task-item--completed .task-item__text {
+    text-decoration: line-through;
+    opacity: 0.5;
 }
 
-.edit-btn:hover {
-    background-color: rgba(96, 165, 250, 0.1);
+/* Ensure the delete button also presses down smoothly */
+.task-item button {
+    transition: transform 0.1s ease;
 }
 
-.delete-btn {
-    color: #f87171;
-    border: 1px solid #f87171;
+.task-item button:active {
+    transform: translateY(2px) scale(0.9);
+}
+/* --- Action Buttons (View, Edit, Delete) --- */
+.task-item__actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 10px;
 }
 
-.delete-btn:hover {
-    background-color: rgba(248, 113, 113, 0.1);
+.btn-action {
+    background: rgba(255, 255, 255, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: var(--transition);
+    /* Tiny 3D thickness for the small buttons */
+    box-shadow: 0px 3px 0px #cbd4e6;
 }
 
-.save-btn {
-    color: #4ade80;
-    border: 1px solid #4ade80;
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 5px 0px #cbd4e6, 0px 5px 10px rgba(0,0,0,0.05);
+    background: #ffffff;
 }
-.save-btn:hover {
-    background-color: rgba(74, 222, 128, 0.1);
+
+.btn-action:active {
+    transform: translateY(3px);
+    box-shadow: 0px 0px 0px #cbd4e6;
 }
+
+/* Hover colors for context */
+.btn-action--view:hover { color: var(--color-blue-shadow); }
+.btn-action--edit:hover { color: var(--color-orange-shadow); }
+.btn-action--delete:hover { color: var(--color-pink-shadow); }

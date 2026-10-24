@@ -1,43 +1,59 @@
-// State management
 let tasks = [];
+
+// Soft color themes for tasks
+const colorThemes = [
+    { bg: 'linear-gradient(135deg, #a8e0ff, #8fd3f4)', shadow: '#6ba7c7' }, // Blue
+    { bg: 'linear-gradient(135deg, #ffc4cf, #ff8fa3)', shadow: '#d16b7e' }, // Pink
+    { bg: 'linear-gradient(135deg, #ffd3b6, #ffb88c)', shadow: '#cc8e66' }, // Orange
+    { bg: 'linear-gradient(135deg, #ffffff, #f0f3fa)', shadow: '#cbd4e6' }  // White/Default
+];
 
 // DOM Elements
 const taskInput = document.getElementById('taskInput');
 const addTaskBtn = document.getElementById('addTaskBtn');
 const taskList = document.getElementById('taskList');
 
+function getCurrentTime() {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
 // Initialize the app
 function init() {
-    // Persist and retrieve structured task items across browser sessions using window.localStorage.
-    const storedTasks = localStorage.getItem('tasks');
+    const storedTasks = localStorage.getItem('tasks_3d');
     if (storedTasks) {
-        tasks = JSON.parse(storedTasks);
+        tasks = JSON.parse(storedTasks).map(task => {
+            if (!task.createdAt) task.createdAt = getCurrentTime();
+            if (!task.themeIndex) task.themeIndex = Math.floor(Math.random() * colorThemes.length);
+            return task;
+        });
+        saveTasks();
     }
     renderTasks();
 }
 
-// Save to localStorage
 function saveTasks() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem('tasks_3d', JSON.stringify(tasks));
 }
 
-// CREATE: Add a new task
+// Add Task
 function addTask() {
     const text = taskInput.value.trim();
-    if (text !== '') {
-        const newTask = {
+    if (text) {
+        tasks.unshift({
             id: Date.now(),
             text: text,
-            completed: false
-        };
-        tasks.push(newTask);
+            completed: false,
+            createdAt: getCurrentTime(),
+            themeIndex: Math.floor(Math.random() * colorThemes.length)
+        });
+        
         taskInput.value = '';
         saveTasks();
         renderTasks();
     }
 }
 
-// UPDATE: Toggle task completion
+// Toggle Task
 function toggleTask(id) {
     tasks = tasks.map(task => 
         task.id === id ? { ...task, completed: !task.completed } : task
@@ -46,78 +62,104 @@ function toggleTask(id) {
     renderTasks();
 }
 
-// DELETE: Remove a task
+// Delete Task
 function deleteTask(id) {
     tasks = tasks.filter(task => task.id !== id);
     saveTasks();
     renderTasks();
 }
 
-// UPDATE: Edit a task
+// Edit Task
 function editTask(id, liElement, currentText) {
-    // Create inline editing UI
+    liElement.innerHTML = ''; 
+
     const input = document.createElement('input');
     input.type = 'text';
     input.value = currentText;
-    input.className = 'edit-input';
+    input.className = 'input-field';
+    input.style.flex = '1';
+    input.style.padding = '8px 12px';
 
     const saveBtn = document.createElement('button');
     saveBtn.textContent = 'Save';
-    saveBtn.className = 'action-btn save-btn';
+    saveBtn.className = 'btn btn--primary';
+    saveBtn.style.padding = '0 16px';
     
     saveBtn.onclick = () => {
         const newText = input.value.trim();
         if (newText) {
-            tasks = tasks.map(task => 
-                task.id === id ? { ...task, text: newText } : task
-            );
+            tasks = tasks.map(task => task.id === id ? { ...task, text: newText } : task);
             saveTasks();
             renderTasks();
         }
     };
 
-    // Clear li and append edit UI
-    liElement.innerHTML = '';
     liElement.appendChild(input);
     liElement.appendChild(saveBtn);
     input.focus();
 }
 
-// READ: Render tasks dynamically
+// Render UI
 function renderTasks() {
     taskList.innerHTML = '';
     
     tasks.forEach(task => {
         const li = document.createElement('li');
-        if (task.completed) li.classList.add('completed');
+        li.className = `task-item ${task.completed ? 'task-item--completed' : ''}`;
+        
+        const theme = colorThemes[task.themeIndex] || colorThemes[3];
+        li.style.setProperty('--item-bg', theme.bg);
+        li.style.setProperty('--item-shadow', theme.shadow);
 
-        // Checkbox
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
+        checkbox.className = 'task-item__checkbox';
         checkbox.checked = task.completed;
         checkbox.onchange = () => toggleTask(task.id);
 
-        // Task Text
-        const span = document.createElement('span');
-        span.className = 'task-text';
-        span.textContent = task.text;
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'task-item__content';
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'task-item__text';
+        textSpan.textContent = task.text;
+
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'task-item__time';
+        timeSpan.textContent = task.createdAt; 
+
+        contentDiv.appendChild(textSpan);
+        contentDiv.appendChild(timeSpan);
+
+        // Action Buttons Wrapper
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'task-item__actions';
+
+        // View Button
+        const viewBtn = document.createElement('button');
+        viewBtn.textContent = 'View';
+        viewBtn.className = 'btn-action btn-action--view';
+        viewBtn.onclick = () => alert(`📌 Task: ${task.text}\n🕒 Added at: ${task.createdAt}\n✅ Status: ${task.completed ? 'Completed' : 'Active'}`);
 
         // Edit Button
         const editBtn = document.createElement('button');
         editBtn.textContent = 'Edit';
-        editBtn.className = 'action-btn edit-btn';
+        editBtn.className = 'btn-action btn-action--edit';
         editBtn.onclick = () => editTask(task.id, li, task.text);
 
         // Delete Button
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
-        deleteBtn.className = 'action-btn delete-btn';
+        deleteBtn.className = 'btn-action btn-action--delete';
         deleteBtn.onclick = () => deleteTask(task.id);
 
+        actionsDiv.appendChild(viewBtn);
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(deleteBtn);
+
         li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(editBtn);
-        li.appendChild(deleteBtn);
+        li.appendChild(contentDiv);
+        li.appendChild(actionsDiv);
 
         taskList.appendChild(li);
     });
@@ -126,10 +168,8 @@ function renderTasks() {
 // Event Listeners
 addTaskBtn.addEventListener('click', addTask);
 taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        addTask();
-    }
+    if (e.key === 'Enter') addTask();
 });
 
-// Boot up the application
+// Boot up
 init();
