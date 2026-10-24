@@ -29,6 +29,12 @@ Ensure all three files are in the same directory for the app to work correctly:
 ```text
 📁 todo-app/
 ├── 📄 index.html    # The main structure and layout of the app
+<<<<<<< HEAD
 ├── 📄 style.css    # The 3D styling, colors, and animations
 ├── 📄 script.js     # The logic for adding, editing, deleting, and saving tasks
 └── 📄 README.md     # Project documentation
+=======
+├── 📄 styles.css    # The 3D styling, colors, and animations
+├── 📄 script.js     # The logic for adding, editing, deleting, and saving tasks
+└── 📄 README.md     # Project documentation
+>>>>>>> a1d1ac6 (readme)
